@@ -4,20 +4,20 @@
 #include <string.h>
 #include <time.h>
 
-#define DOUBLE float
-
 
 int Ny;
 int Nx;
 
 double **Matrix(void);
 void freePointer(double **matrix);
-int aleatorio();
 double radioMax(int x_0,int y_0,double **matrix);
+int aleatorio();
 
 
 int main(void){
-
+  
+  
+  
   FILE *file;
   file=fopen("map_data.txt","r");
 
@@ -26,6 +26,12 @@ int main(void){
   char *split_buffer;
   const char *delimiter;
 
+  int iteraciones=100;
+
+  double *lista_x=malloc(iteraciones*sizeof(double));
+  double *lista_y=malloc(iteraciones*sizeof(double));
+  double *lista_r=malloc(iteraciones*sizeof(double));
+  
   Nx=500;//por que sale segmentation fault si pongo 744X500
   Ny=1500;
 
@@ -57,21 +63,63 @@ int main(void){
      
       i+=1;   
     }
-
+  
   int y_0=aleatorio()%1500;
   int x_0=aleatorio()%500;
-
-  printf("%d %d\n",y_0,x_0);
-  printf("%f\n",matrix[y_0][x_0]);
   
-  if(matrix[y_0][x_0]==0.0)
+  double r_0=radioMax(x_0,y_0,matrix);
+  
+  lista_x[0]=x_0;
+  lista_y[0]=y_0;
+  lista_r[0]=r_0;
+  
+  
+  int k;
+  
+  for(k=0;k<iteraciones;k++)
     {
-     double r=radioMax( x_0, y_0, matrix);
+      int y_2=aleatorio()%1500;
+      int x_2=aleatorio()%500;
+      
+      int y_1=lista_y[k];
+      int x_1=lista_x[k];
+            	
+     if( (matrix[y_2][x_2]==0.0) && (matrix[y_1][x_1]==0.0) )
+    {
+      
+     double r_2=radioMax( x_2, y_2, matrix);
+     double r_1=radioMax(x_1,y_1,matrix); 
+     double alfa=r_2/r_1;
      
-     printf("%f\n",r);
+     if(alfa>=1.0)
+       {
+	 lista_x[k+1]=x_2;
+	 lista_y[k+1]=y_2;
+	 lista_r[k+1]=r_2;
+       }
+     else
+       {
+	 double  beta = (double)rand() / (double)RAND_MAX ;
+	 if(beta<=alfa)
+	   {
+	     lista_x[k+1]=x_2;
+	     lista_y[k+1]=y_2;
+	     lista_r[k+1]=r_2;
+	   }
+	 else
+	   {
+	     lista_x[k+1]=x_1;
+	     lista_y[k+1]=y_1;
+	     lista_r[k+1]=r_1;
+	     
+	   }
+       }
     }
-
-
+     printf("%f\t%f\t%f\n",lista_x[k],lista_y[k],lista_r[k]);
+     
+     }
+  
+  
   
   /* 
   freePointer(matrix);
@@ -107,14 +155,6 @@ void freePointer(double **matrix)
     free(matrix);
 }
 
-int aleatorio()
-{
-  srand(time(NULL));
-
-  int  x=rand();
-  return x;
-  
-}
 
 
 double radioMax(int x_0,int y_0,double **matrix)
@@ -139,3 +179,12 @@ double radioMax(int x_0,int y_0,double **matrix)
 
 
 
+
+int aleatorio()
+{
+  srand(time(NULL));
+
+  int  x=rand();
+  return x;
+  
+}
