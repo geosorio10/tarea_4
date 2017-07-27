@@ -9,9 +9,12 @@ ax.set_aspect('equal')
 
 ax.imshow(datos,cmap='gray')
 
-x=70
-y=377
-r=113
+punto=np.loadtxt('output.dat')
+
+x=punto[0]
+y=punto[1]
+r=punto[2]
+
 circ = Circle((x,y),r,color='r',fill=False)
 ax.add_patch(circ)
 
