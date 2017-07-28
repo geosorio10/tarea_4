@@ -18,5 +18,5 @@ r=punto[2]
 circ = Circle((x,y),r,color='r',fill=False)
 ax.add_patch(circ)
 
+plt.savefig('PuntoNemo.pdf')
 
-plt.show()
